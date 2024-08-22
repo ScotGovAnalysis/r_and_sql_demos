@@ -1,8 +1,9 @@
 # Simple example of a dbplyr workflow
 # See https://dbplyr.tidyverse.org/
 
-# this workflow can be used to prevent reading large raw tables into R
-# Which can be slow over VPN and can mean do not use all local laptop memory
+# This workflow can be used as an alternative to reading large tables into R
+# It can speed up processes, particularly over VPN and
+# save your machine from running out of memory for particularly large tables
 
 
 library(RtoSQLServer) # For loading dataframe
