@@ -6,7 +6,7 @@
 # save your machine from running out of memory for particularly large tables
 
 library(tidyverse) # functions used in this script are qualified with the
-# package name for clarity, e.g. dplyr::filter, loading tidyverse get %>% pipe
+# package name for clarity, e.g. dplyr::filter, loading tidyverse for %>% pipe
 
 # create demo table and load to database ----------------------------------
 
