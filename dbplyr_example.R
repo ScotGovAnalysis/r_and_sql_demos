@@ -5,16 +5,17 @@
 # It can speed up processes, particularly over VPN and
 # save your machine from running out of memory for particularly large tables
 
-
-library(RtoSQLServer) # For writing dataframe
-library(DBI) # For making database connection
-library(dplyr) # For tidyverse style data manipulation
-library(dbplyr) # For translating dplyr into SQL
+library(tidyverse) # functions used in this script are qualified with the
+# package name for clarity, e.g. dplyr::filter, loading tidyverse get %>% pipe
 
 # create demo table and load to database ----------------------------------
-server <- "s0196a\\ADM" # change this for your ADM server
-database <- "AdmTestThemeAdmTestTopic" # change this for your ADM database
-schema <- "admtestdataitem01" # change this for your schema in the database
+
+server <- "" # change this for your ADM server
+database <- "" # change this for your ADM database
+schema <- "" # change this for your schema in the database
+
+db_table_name <- "test_agg_tbl" # change this for the name of a table you
+                                # will create in ADM database for testing
 
 # create demo table with dummy data
 number_of_rows <- 100000
@@ -30,11 +31,11 @@ cat_col <- sample(c("a", "b", "c", "d"),
 load_df <- data.frame(cat_col = cat_col, val_col = val_col)
 
 # Load into database using RtoSQLServer write_dataframe_to_db -----------------
-write_dataframe_to_db(
+RtoSQLServer::write_dataframe_to_db(
   server = server,
   database = database,
   schema = schema,
-  table_name = "test_agg_tbl",
+  table_name = db_table_name,
   dataframe = load_df,
   append_to_existing = TRUE,
   batch_size = 10000,
@@ -47,7 +48,7 @@ rm(list = c("load_df", "cat_col", "val_col"))
 # Query table without reading it into local memory ---------------------------
 
 # Firstly make a connection object using DBI::dbConnect
-con <- dbConnect(odbc::odbc(),
+con <- DBI::dbConnect(odbc::odbc(),
                  Driver = "SQL Server",
                  Server = server,
                  Database = database,
@@ -55,39 +56,39 @@ con <- dbConnect(odbc::odbc(),
 
 # use dplyr::tbl to make reference to object using dbplyr::in_schema
 # the tbl function creates a list in R environment
-test_table <- tbl(con, in_schema(schema, "test_agg_tbl"))
+test_table <- dplyr::tbl(con, dbplyr::in_schema(schema, "test_agg_tbl"))
 
 # preview the table - a good way to see table structure without reading full
 # table into R is dplyr::glimpse
-glimpse(test_table)
+dplyr::glimpse(test_table)
 
 # An alternative to glimpse if want a data frame 
 # is to use dplyr slice_sample - need to collect(), see below
-test_table %>% slice_sample(n = 10) %>% collect()
+test_table %>% dplyr::slice_sample(n = 10) %>% dplyr::collect()
 
 # if we pipe a dplyr function to show_query we can see the SQL it will use
 # This is recommended to check your SQL will do what you expect
 test_table %>%
-  filter(cat_col != "d") %>%
-  show_query()
+  dplyr::filter(cat_col != "d") %>%
+  dplyr::show_query()
 
 # can filter, group_by, summarise
 # Finally return aggregated result as data frame using `dplyr::collect()`
 
 my_result <- test_table %>%
-  filter(val_col > 123.5) %>%
-  group_by(cat_col) %>%
-  summarise(test_total = sum(val_col)) %>%
-  collect()
+  dplyr::filter(val_col > 123.5) %>%
+  dplyr::group_by(cat_col) %>%
+  dplyr::summarise(test_total = sum(val_col)) %>%
+  dplyr::collect()
 
 
 # Clean-up - drop table from database (RtoSQLServer) and disconnect (DBI)------
 
-drop_table_from_db(
+RtoSQLServer::drop_table_from_db(
   server = server,
   database = database,
   schema = schema,
-  table_name = "test_agg_tbl"
+  table_name = db_table_name
 )
 
-dbDisconnect(con)
+DBI::dbDisconnect(con)
