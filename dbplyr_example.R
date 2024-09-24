@@ -3,7 +3,7 @@
 
 # This workflow can be used as an alternative to reading large tables into R
 # It can speed up processes, particularly over VPN and
-# save your machine from running out of memory for particularly large tables
+# save your machine from running out of memory for very large tables
 
 library(tidyverse) # functions used in this script are qualified with the
 # package name for clarity, e.g. dplyr::filter, loading tidyverse for %>% pipe
@@ -47,7 +47,12 @@ rm(list = c("load_df", "cat_col", "val_col"))
 
 # Query table without reading it into local memory ---------------------------
 
-# Firstly make a connection object using DBI::dbConnect
+# Firstly make a connection object using RtoSQLServer 
+# (need to upgrade RtoSQLServer to be v0.23 or later to create con this way)
+con <- RtoSQLServer::create_sqlserver_connection(server = server,
+                                                 database = database)
+
+# alternatively use DBI to make the connection
 con <- DBI::dbConnect(odbc::odbc(),
                  Driver = "SQL Server",
                  Server = server,
