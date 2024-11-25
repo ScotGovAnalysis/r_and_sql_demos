@@ -87,7 +87,8 @@ my_result <- test_table %>%
   dplyr::collect()
 
 
-# Clean-up - drop table from database (RtoSQLServer) and disconnect (DBI)------
+# Clean-up test example
+# drop table from database (RtoSQLServer) and disconnect (DBI)------
 
 RtoSQLServer::drop_table_from_db(
   server = server,
