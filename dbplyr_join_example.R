@@ -9,13 +9,10 @@ library(tidyverse)
 
 set.seed(42) # reproducible example by setting seed val
 
-# server <- ""
-# database <- ""
-# schema <- ""
-
-server <- "s0196a\\ADM"
-database <- "admtestthemeadmtesttopic"
-schema <- "admtestdataitem01"
+# Set the connection details for your setup
+server <- ""
+database <- ""
+schema <- ""
 
 
 # Generate synthetic customers and orders tables
