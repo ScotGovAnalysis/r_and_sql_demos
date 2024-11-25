@@ -1,3 +1,10 @@
+# Relational databases such as SQL Server are optimised for joins
+# therefore if you have two or more tables in ADM SQL database you wish to join
+# it is a good idea to join them in SQL before reading into R, rather than
+# reading full tables into R and joining them in your R session. This
+# code gives an example of doing this using dbplyr and a simple workflow using
+# dplyr::left_join
+
 library(tidyverse)
 
 set.seed(42) # reproducible example by setting seed val
